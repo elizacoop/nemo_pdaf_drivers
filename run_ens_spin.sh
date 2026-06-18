@@ -6,8 +6,8 @@ SRC="./EXP00_template_rundir"
 FILE="namelist_cfg"
 FILEICE="namelist_ice_cfg"
 
-START=11
-END=19
+START=9
+END=10
 
 job_ids=()
 
