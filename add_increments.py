@@ -33,7 +33,7 @@ def cap_sum_at_one(arr):
 folder_root = '/work/n01/n01/elicoo/CRISP_NEMO_PDAF/CRISP_NEMO_PDAF_1/nemo_5.0.1/cfgs/exp-build-notop/'
 
 ens_tot = 19 #set this somewhere higher up??
-num_domains = 2#96 #and this
+num_domains = 96 #and this
 numcats = 6 #and this
 restart_folder = 'restart_step0' #and do something with this
 restart_string = 'ORCA2_00034848_ens_spin_ice_toend2013'
