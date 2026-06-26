@@ -12,6 +12,7 @@ END=19
 job_ids=()
 
 for i in $(seq "$START" "$END"); do
+    START_DATE="20131223" #get this from last timestep output file??? OR from python script like the get_times one; just extract time string
     NUM="360" #time step 78 - timestep 77##"34848" #this need to come from time_calc script
     #DST="../nemo_5.0.1/cfgs/exp-build-notop/ens_${i}" OLD PATH
     DST="../CRISP_NEMO_PDAF/CRISP_NEMO_PDAF_1/nemo_5.0.1/cfgs/exp-build-notop/ens_${i}"
@@ -43,7 +44,7 @@ id=$(
   sed -i "s|cn_icerst_in[[:space:]]*=[[:space:]]*\"[^\"]*\"|cn_icerst_in = \"${RESTART_IN_ICE_STRING}\"|" "$FILEICE"   #restart filestring ice   (in)
 
 
-  sbatch --parsable myscript_exp03.slurm
+  sbatch --parsable myscript_short.slurm
   #job_ids+=(id)
   #echo "Submitted job $id"
   ))
