@@ -34,12 +34,16 @@ for ((i=FIRST_STEP; i<=last_step; i++)); do
         NXTRNTS=$(python get_runtime.py "$i")
 	echo "$i"
 	echo "$NXTRNTS"
+	START_STRING=$(python get_next_start_string.py "$i")
+	echo "$START_STRING"
 	deactivate
 
-	#DEFINE INDIR,INSTRING,INICESTRNG, OUTDIR, OUTSTRING, OUTICESTRING DEPENDING IN TIME_COUNTER AND next run time
+	#DEFINE INDIR,INSTRING,INICESTRNG, OUTDIR, OUTSTRING, OUTICESTRING DEPENDING IN TIME_COUNTER AND next run time AND START_string
+	
 
-	#RUN NEMO ENSEMBLE (NEEDS instring, inicestring, indir, outstring, outicestring, outdir)
-
+	#RUN NEMO ENSEMBLE (NEEDS instring, inicestring, indir, outstring, outicestring, outdir, startstring), NXTRNTS
+	./run_ens_step_sublimit.sh "$INDIR" "$INSTRING" "$INICESTRNG" "$OUTDIR" "$OUTSTRING" "$OUTICESTRING" "$NXTRNTS" "$START_STRING"
+         
 	#DO ASSIMILATION (NEEDS INDIR, INSTRING, INICESTRING)
 
 	#ADD INCREMENTS
