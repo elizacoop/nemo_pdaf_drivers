@@ -9,7 +9,7 @@
 #that WON'T MATCH the ongoing file and folder name patterns
 
 FIRST_STEP=77 #obs time index referring to first (post-spin) assimilation
-TOTAL_STEPS=3
+TOTAL_STEPS=1
 last_step=$((FIRST_STEP + TOTAL_STEPS))
 OBSFILE='/work/n01/n01/elicoo/observations/data_v3_2010-2023.nc' #needed in several places
 
@@ -24,12 +24,30 @@ SPINSTRING="ORCA2_someting"
 #Do the assimilation
 #construct the outdir and outstrings?? usinf common PREFIX??
 #**sbatch run_assimilation --SPINDIR --SPINSTRING --SPINICESTRING  --OBSFILE
+#??these are in /restart_step0 but with non-standard string - ideally set to be step0 in the inital nemo ens run
+# at this point we are at STEP 77, having already done the assimilation
+#RESTART_STRING=$5##"ens_step1"
+#RESTART_ICE_STRING=$6##"ens_ice_step1"
+#RESTART_OUT_DIR=$4##"./restart_step1"
+#RESTART_IN_DIR=$1##"./restart_step0"
+#RESTART_IN_STRING=$2##"ORCA2_00034848_ens_spin_toend2013"
+#RESTART_IN_ICE_STRING=$3##"ORCA2_00034848_ens_spin_ice_toend2013"
 
+#echo "i=$i COUNTER=$COUNTER CPONE=$CPONE"
+#echo "INDIR=$INDIR"
+#echo "OUTDIR=$OUTDIR"
+#echo "INSTRING=$INSTRING"
+#echo "OUTSTRING=$OUTSTRING"
+#
 
 #OUTER TIME LOOP
 #for time_counter in range(FIRST_SETP:FIRST_STEP+TOTAL_Steps):
 for ((i=FIRST_STEP; i<=last_step; i++)); do
-       	#CALCUlate next RUN TIME HERE???
+	#define the step counter here 
+	COUNTER=$((i-FIRST_STEP))
+	CPONE=$((COUNTER +1))
+       	echo "i=$i COUNTER=$COUNTER CPONE=$CPONE"
+        #CALCUlate next RUN TIME HERE???
 	source  /work/n01/n01/elicoo/myvenv/bin/activate 
         NXTRNTS=$(python get_runtime.py "$i")
 	echo "$i"
@@ -38,16 +56,37 @@ for ((i=FIRST_STEP; i<=last_step; i++)); do
 	echo "$START_STRING"
 	deactivate
 
+
 	#DEFINE INDIR,INSTRING,INICESTRNG, OUTDIR, OUTSTRING, OUTICESTRING DEPENDING IN TIME_COUNTER AND next run time AND START_string
-	
+	INDIR="./restart_step${COUNTER}"
+	if [ "$COUNTER" -eq 0 ]; then
+             INSTRING="ORCA2_00034848_ens_spin_toend2013"
+	     INICESTRING="ORCA2_00034848_ens_spin_ice_toend2013"
+        else
+		INSTRING=$(printf "ORCA2_%08d_ens_step%d" "$LAST_NXTRNTS" "$COUNTER") #FILE=$(printf "restart_%08d.dat" "$NUM") ORCA2_00000360_ens_step1_0094.nc
+		INICESTRING=$(printf "ORCA2_%08d_ens_ice_step%d" "$LAST_NXTRNTS" "$COUNTER")
+        fi
+
+	OUTDIR="./restart_step$CPONE"
+	OUTSTRING="ens_step$CPONE"
+	OUTICESTRING="ens_ice_step$CPONE"
+        #echo "INDIR=$INDIR"
+	echo "INDIR=$INDIR   OUTDIR=$OUTDIR"
+	echo "INSTRING=$INSTRING"
+	echo "OUTSTRING=$OUTSTRING"
+
+
 
 	#RUN NEMO ENSEMBLE (NEEDS instring, inicestring, indir, outstring, outicestring, outdir, startstring), NXTRNTS
-	./run_ens_step_sublimit.sh "$INDIR" "$INSTRING" "$INICESTRNG" "$OUTDIR" "$OUTSTRING" "$OUTICESTRING" "$NXTRNTS" "$START_STRING"
+	./run_ens_general_step_sublimit.sh "$INDIR" "$INSTRING" "$INICESTRING" "$OUTDIR" "$OUTSTRING" "$OUTICESTRING" "$NXTRNTS" "$START_STRING"
          
-	#DO ASSIMILATION (NEEDS INDIR, INSTRING, INICESTRING)
+	#DO ASSIMILATION (NEEDS INDIR, INSTRING, INICESTRING, OBSFILE)
 
 	#ADD INCREMENTS
 
+	#KEEP THIS value of NXTRNTS and START_STRING for the following instring
+	LAST_NXTRNTS="$NXTRNTS"
+	LAST_START_STRING="$START_STRING" #??are the types OK here?? **don't need this one actually
 	
 done
 
