@@ -1,6 +1,7 @@
 import numpy as np
 from netCDF4 import Dataset
 import shutil
+import sys
 
 def cap_sum_at_one(arr):
     """
@@ -32,11 +33,15 @@ def cap_sum_at_one(arr):
 #    print(temp.shape)
 folder_root = '/work/n01/n01/elicoo/CRISP_NEMO_PDAF/CRISP_NEMO_PDAF_1/nemo_5.0.1/cfgs/exp-build-notop/'
 
-ens_tot = 19 #set this somewhere higher up??
+#ens_tot = 19 #set this somewhere higher up??
+ens_tot = int(sys.argv[3])
 num_domains = 96 #and this
 numcats = 6 #and this
-restart_folder = 'restart_step0' #and do something with this
-restart_string = 'ORCA2_00034848_ens_spin_ice_toend2013'
+#restart_folder = 'restart_step0' #and do something with this
+#restart_string = 'ORCA2_00034848_ens_spin_ice_toend2013'
+restart_folder = sys.argv[1]
+restart_string = sys.argv[2]
+#"$OUTDIR" "$OUTLONGSTRING" "$MEMBERS"
 #restart has a_i(time_counter, numcat, y, x) for SIC
 #inc file has bckinseaice_cat_1(time_counter, y, x) etc for SIC
 #background file has a_i_cat_1(time_counter, y, x) etc for SIC

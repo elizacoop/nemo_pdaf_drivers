@@ -4,8 +4,8 @@ set -euo pipefail
 SRC="./EXP00_template_rundir"
 FILE="namelist_cfg"
 FILEICE="namelist_ice_cfg"
-START=1
-END=3
+START=1   #start is first ens number, end is final number
+END=$9
 BATCH_SIZE=10   # Maximum number of jobs to have in the queue at once
 
 #order in main_driver: "$INDIR" "$INSTRING" "$INICESTRNG" "$OUTDIR" "$OUTSTRING" "$OUTICESTRING" "$NXTRNTS" "$START_STRING"

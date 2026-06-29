@@ -9,9 +9,10 @@
 #that WON'T MATCH the ongoing file and folder name patterns
 
 FIRST_STEP=77 #obs time index referring to first (post-spin) assimilation
-TOTAL_STEPS=1
+TOTAL_STEPS=26
 last_step=$((FIRST_STEP + TOTAL_STEPS))
 OBSFILE='/work/n01/n01/elicoo/observations/data_v3_2010-2023.nc' #needed in several places
+MEMBERS=9
 
 #Set spinup dir and filestring here
 SPINDIR="somehitng"
@@ -26,19 +27,6 @@ SPINSTRING="ORCA2_someting"
 #**sbatch run_assimilation --SPINDIR --SPINSTRING --SPINICESTRING  --OBSFILE
 #??these are in /restart_step0 but with non-standard string - ideally set to be step0 in the inital nemo ens run
 # at this point we are at STEP 77, having already done the assimilation
-#RESTART_STRING=$5##"ens_step1"
-#RESTART_ICE_STRING=$6##"ens_ice_step1"
-#RESTART_OUT_DIR=$4##"./restart_step1"
-#RESTART_IN_DIR=$1##"./restart_step0"
-#RESTART_IN_STRING=$2##"ORCA2_00034848_ens_spin_toend2013"
-#RESTART_IN_ICE_STRING=$3##"ORCA2_00034848_ens_spin_ice_toend2013"
-
-#echo "i=$i COUNTER=$COUNTER CPONE=$CPONE"
-#echo "INDIR=$INDIR"
-#echo "OUTDIR=$OUTDIR"
-#echo "INSTRING=$INSTRING"
-#echo "OUTSTRING=$OUTSTRING"
-#
 
 #OUTER TIME LOOP
 #for time_counter in range(FIRST_SETP:FIRST_STEP+TOTAL_Steps):
@@ -78,11 +66,27 @@ for ((i=FIRST_STEP; i<=last_step; i++)); do
 
 
 	#RUN NEMO ENSEMBLE (NEEDS instring, inicestring, indir, outstring, outicestring, outdir, startstring), NXTRNTS
-	./run_ens_general_step_sublimit.sh "$INDIR" "$INSTRING" "$INICESTRING" "$OUTDIR" "$OUTSTRING" "$OUTICESTRING" "$NXTRNTS" "$START_STRING"
+	./run_ens_general_step_sublimit.sh "$INDIR" "$INSTRING" "$INICESTRING" "$OUTDIR" "$OUTSTRING" "$OUTICESTRING" "$NXTRNTS" "$START_STRING" "$MEMBERS"
+	#^^ SHOULD SOMEWHERE PUT IN A STOP IF THE ABOVE FAILS, otherwise will cycle through all the timesteps
          
 	#DO ASSIMILATION (NEEDS INDIR, INSTRING, INICESTRING, OBSFILE)
+	echo "Starting assimilation"
+	
+	ASSIM_TIME=$((i+1))
+	PREFIX=$(printf "ORCA2_%08d_" "$NXTRNTS")
+	echo "ASSIM_TIME=$ASSIM_TIME  PREFIX=$PREFIX"
+	echo "Using $OUTDIR, $OUTSTRING, $OUTICESTRING, $OBSFILE"
+	./run_general_assimilation.sh "$OUTDIR" "$PREFIX" "$OUTSTRING" "$OUTICESTRING" "$ASSIM_TIME" "$OBSFILE" "$MEMBERS"
 
-	#ADD INCREMENTS
+	#ADD INCREMENTS needs folder, string and num_ens
+        OUTLONGSTRING=${PREFIX}${OUTICESTRING}
+	echo "Addin increments using $OUTDIR $OUTLONGSTRING $MEMBERS" #Addin increments using ./restart_step1 ORCA2_00000360_ 4
+
+	source  /work/n01/n01/elicoo/myvenv/bin/activate
+	python add_increments.py "$OUTDIR" "$OUTLONGSTRING" "$MEMBERS"
+	deactivate
+        
+	echo "Increments added"
 
 	#KEEP THIS value of NXTRNTS and START_STRING for the following instring
 	LAST_NXTRNTS="$NXTRNTS"
