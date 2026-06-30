@@ -51,13 +51,13 @@ for ((i=FIRST_STEP; i<=last_step; i++)); do
              INSTRING="ORCA2_00034848_ens_spin_toend2013"
 	     INICESTRING="ORCA2_00034848_ens_spin_ice_toend2013"
         else
-		INSTRING=$(printf "ORCA2_%08d_ens_step%d" "$LAST_NXTRNTS" "$COUNTER") #FILE=$(printf "restart_%08d.dat" "$NUM") ORCA2_00000360_ens_step1_0094.nc
-		INICESTRING=$(printf "ORCA2_%08d_ens_ice_step%d" "$LAST_NXTRNTS" "$COUNTER")
+		INSTRING=$(printf "ORCA2_%08d_noassimens_step%d" "$LAST_NXTRNTS" "$COUNTER") #FILE=$(printf "restart_%08d.dat" "$NUM") ORCA2_00000360_ens_step1_0094.nc
+		INICESTRING=$(printf "ORCA2_%08d_noassimens_ice_step%d" "$LAST_NXTRNTS" "$COUNTER")
         fi
 
 	OUTDIR="./restart_step$CPONE"
-	OUTSTRING="ens_step$CPONE"
-	OUTICESTRING="ens_ice_step$CPONE"
+	OUTSTRING="noassimens_step$CPONE"
+	OUTICESTRING="noassimens_ice_step$CPONE"
         #echo "INDIR=$INDIR"
 	echo "INDIR=$INDIR   OUTDIR=$OUTDIR"
 	echo "INSTRING=$INSTRING"
@@ -74,19 +74,19 @@ for ((i=FIRST_STEP; i<=last_step; i++)); do
 	
 	ASSIM_TIME=$((i+1))
 	PREFIX=$(printf "ORCA2_%08d_" "$NXTRNTS")
-	echo "ASSIM_TIME=$ASSIM_TIME  PREFIX=$PREFIX"
-	echo "Using $OUTDIR, $OUTSTRING, $OUTICESTRING, $OBSFILE"
-	./run_general_assimilation.sh "$OUTDIR" "$PREFIX" "$OUTSTRING" "$OUTICESTRING" "$ASSIM_TIME" "$OBSFILE" "$MEMBERS"
+	##echo "ASSIM_TIME=$ASSIM_TIME  PREFIX=$PREFIX"
+	##echo "Using $OUTDIR, $OUTSTRING, $OUTICESTRING, $OBSFILE"
+	##./run_general_assimilation.sh "$OUTDIR" "$PREFIX" "$OUTSTRING" "$OUTICESTRING" "$ASSIM_TIME" "$OBSFILE" "$MEMBERS"
 
 	#ADD INCREMENTS needs folder, string and num_ens
         OUTLONGSTRING=${PREFIX}${OUTICESTRING}
 	echo "Addin increments using $OUTDIR $OUTLONGSTRING $MEMBERS" #Addin increments using ./restart_step1 ORCA2_00000360_ 4
 
-	source  /work/n01/n01/elicoo/myvenv/bin/activate
-	python add_increments.py "$OUTDIR" "$OUTLONGSTRING" "$MEMBERS"
-	deactivate
+	##source  /work/n01/n01/elicoo/myvenv/bin/activate
+	##python add_increments.py "$OUTDIR" "$OUTLONGSTRING" "$MEMBERS"
+	##deactivate
         
-	echo "Increments added"
+	echo "Increments NOT added"
 
 	#KEEP THIS value of NXTRNTS and START_STRING for the following instring
 	LAST_NXTRNTS="$NXTRNTS"
