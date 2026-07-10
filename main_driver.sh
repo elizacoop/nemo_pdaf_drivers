@@ -83,7 +83,7 @@ for ((i=FIRST_STEP; i<=last_step; i++)); do
 	echo "Adding increments using $OUTDIR $OUTLONGSTRING $MEMBERS" #Addin increments using ./restart_step1 ORCA2_00000360_ 4
 
 	source  /work/n01/n01/elicoo/myvenv/bin/activate
-	python add_increments.py "$OUTDIR" "$OUTLONGSTRING" "$MEMBERS"
+	python add_increments_SIC_SIV.py "$OUTDIR" "$OUTLONGSTRING" "$MEMBERS"
 	deactivate
         
 	echo "Increments added"
