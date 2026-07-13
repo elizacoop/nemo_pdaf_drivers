@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -euo pipefail #should stop script if anything fails
 
 #things which many scripts need can be exported? Buy maybe simpler to use command line args 
 #will trial this first
@@ -9,7 +9,7 @@
 #that WON'T MATCH the ongoing file and folder name patterns
 
 FIRST_STEP=77 #obs time index referring to first (post-spin) assimilation
-TOTAL_STEPS=26
+TOTAL_STEPS=27
 last_step=$((FIRST_STEP + TOTAL_STEPS))
 OBSFILE='/work/n01/n01/elicoo/observations/data_v3_2010-2023.nc' #needed in several places
 MEMBERS=9
@@ -30,7 +30,7 @@ SPINSTRING="ORCA2_someting"
 
 #OUTER TIME LOOP
 #for time_counter in range(FIRST_SETP:FIRST_STEP+TOTAL_Steps):
-for ((i=FIRST_STEP; i<=last_step; i++)); do
+for ((i=FIRST_STEP; i<last_step; i++)); do
 	#define the step counter here 
 	COUNTER=$((i-FIRST_STEP))
 	CPONE=$((COUNTER +1))
@@ -83,7 +83,7 @@ for ((i=FIRST_STEP; i<=last_step; i++)); do
 	echo "Adding increments using $OUTDIR $OUTLONGSTRING $MEMBERS" #Addin increments using ./restart_step1 ORCA2_00000360_ 4
 
 	source  /work/n01/n01/elicoo/myvenv/bin/activate
-	python add_increments_SIC_SIV.py "$OUTDIR" "$OUTLONGSTRING" "$MEMBERS"
+	python add_incs_ALL.py "$OUTDIR" "$OUTLONGSTRING" "$MEMBERS"
 	deactivate
         
 	echo "Increments added"
