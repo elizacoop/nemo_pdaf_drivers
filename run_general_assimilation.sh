@@ -50,7 +50,16 @@ jobid=$(cd "$DST"
   #sed -i "s/f_basename_rst\s*=\s*[0-9]*/path_rst_suffix = "RESTART_ICE_STRING"" "$FILE"      #restart ice string
   sed -i "s|f_basename_rst[[:space:]]*=[[:space:]]*'[^']*'|f_basename_rst = '${PREFIX}${RESTART_STRING}'|" "$FILE" #restart string NOT ICE
   sed -i "s|path_rst_suffix[[:space:]]*=[[:space:]]*'[^']*'|path_rst_suffix = '${DIR_AMMENDED}'|" "$FILE" #restart ice folder
-  sed -i "s|rst_file[[:space:]]*=[[:space:]]*'[^']*'|rst_file = '${PREFIX}${RESTART_ICE_STRING}'|" "$FILE" #restart ICE string
+  
+  #rst_file can be ICE or NOT - this approach relies on the file NOT having ice in the first iteration
+  sed -i \
+  -e "/rst_file[[:space:]]*=[[:space:]]*'[^']*ice[^']*'/ \
+      s|rst_file[[:space:]]*=[[:space:]]*'[^']*'|rst_file = '${PREFIX}${RESTART_ICE_STRING}'|" \
+  -e "/rst_file[[:space:]]*=[[:space:]]*'[^']*ice[^']*'/! \
+      s|rst_file[[:space:]]*=[[:space:]]*'[^']*'|rst_file = '${PREFIX}${RESTART_STRING}'|" \
+  "$FILE"
+
+  #sed -i "s|rst_file[[:space:]]*=[[:space:]]*'[^']*'|rst_file = '${PREFIX}${RESTART_ICE_STRING}'|" "$FILE" #restart ICE string
   sed -i "s|file_ssh_mgrid[[:space:]]*=[[:space:]]*'[^']*'|file_ssh_mgrid = '${OBS_FILE}'|" "$FILE" #observation file
 
 
