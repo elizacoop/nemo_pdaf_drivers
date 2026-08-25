@@ -45,10 +45,16 @@ cat_fields = {
     "e_i_l03": {"increment": "bckinei3", "clip_zero": False, "cap_sum": False},
     "e_i_l04": {"increment": "bckinei4", "clip_zero": False, "cap_sum": False},
     "e_i_l05": {"increment": "bckinei5", "clip_zero": False, "cap_sum": False},
+
+}
+
+ocean_fields = {
+    "sn": {"increment": "bckinsn", "clip_zero": False, "cap_sum": False},
+    "tn": {"increment": "bckintn", "clip_zero": False, "cap_sum": False},
 }
 
 # --------------------------------------------------------------------
-# Variables without an ice category dimension
+# Variables without an ice category or lev dimension
 # --------------------------------------------------------------------
 
 scalar_fields = {
@@ -68,7 +74,7 @@ if __name__ == "__main__":
 
         for dom in range(num_domains):
 
-            print(f"  Domain {dom}")
+            #print(f"  Domain {dom}")
 
             with Dataset(
                 folder_root + f"ens_{ens_number}/assim_background_increments_{dom:04d}.nc",
@@ -126,8 +132,29 @@ if __name__ == "__main__":
 
                     analyses[restart_var] = analysis
 
+                # ---------------------------------------------------------
+                # OCean variables
+                # ---------------------------------------------------------
+
+                for restart_var, info in ocean_fields.items():
+
+                    analysis = (
+                            increment_file[info["increment"]][0, :, :, :]
+                        + background_file[restart_var][0, :, :, :]
+                    )
+
+                    if info["clip_zero"]:
+                        analysis[analysis < 0] = 0
+
+                    analyses[restart_var] = analysis
+
+                #if dom == 1:
+                #    print (analyses)
+
+
+
             # -------------------------------------------------------------
-            # Backup restart
+            # Backup restarts
             # -------------------------------------------------------------
 
             restart = (
@@ -136,6 +163,15 @@ if __name__ == "__main__":
             )
 
             shutil.copy(restart, restart.replace(".nc", "_pre.nc"))
+
+            ocean_restart_string = restart_string.replace("ice_", "")
+            restart_ocean = ( folder_root
+                + f"ens_{ens_number}/{restart_folder}/{ocean_restart_string}_{dom:04d}.nc"
+            )
+
+            shutil.copy(restart_ocean, restart_ocean.replace(".nc", "_pre.nc"))
+
+
 
             # -------------------------------------------------------------
             # Write analyses back
@@ -150,3 +186,8 @@ if __name__ == "__main__":
                 # Variables without category dimension
                 for restart_var in scalar_fields:
                     nc.variables[restart_var][0, :, :] = analyses[restart_var]
+
+
+            with Dataset(restart_ocean, "r+") as nc:
+                for ocean_var in ocean_fields:
+                    nc.variables[ocean_var][0,:,:,:] = analyses[ocean_var]
