@@ -28,9 +28,12 @@ SPINSTRING="ORCA2_someting"
 #??these are in /restart_step0 but with non-standard string - ideally set to be step0 in the inital nemo ens run
 # at this point we are at STEP 77, having already done the assimilation
 
+##LAST_NXTRNTS=360 #for forcing start at i=95
+
 #OUTER TIME LOOP
 #for time_counter in range(FIRST_SETP:FIRST_STEP+TOTAL_Steps):
 for ((i=FIRST_STEP; i<last_step; i++)); do
+###for ((i=95; i<last_step; i++)); do
 	#define the step counter here 
 	COUNTER=$((i-FIRST_STEP))
 	CPONE=$((COUNTER +1))
@@ -66,8 +69,11 @@ for ((i=FIRST_STEP; i<last_step; i++)); do
 
 
 	#RUN NEMO ENSEMBLE (NEEDS instring, inicestring, indir, outstring, outicestring, outdir, startstring), NXTRNTS
-	./run_ens_general_step_sublimit.sh "$INDIR" "$INSTRING" "$INICESTRING" "$OUTDIR" "$OUTSTRING" "$OUTICESTRING" "$NXTRNTS" "$START_STRING" "$MEMBERS"
-	#^^ SHOULD SOMEWHERE PUT IN A STOP IF THE ABOVE FAILS, otherwise will cycle through all the timesteps
+	#./run_ens_general_step_sublimit.sh "$INDIR" "$INSTRING" "$INICESTRING" "$OUTDIR" "$OUTSTRING" "$OUTICESTRING" "$NXTRNTS" "$START_STRING" "$MEMBERS"
+	./save_ints_run_ens_general_step_sublimit.sh "$INDIR" "$INSTRING" "$INICESTRING" "$OUTDIR" "$OUTSTRING" "$OUTICESTRING" "$NXTRNTS" "$START_STRING" "$MEMBERS"
+	#^^ SHOULD SOMEWHERE PUT IN A STOP IF THE ABOVE FAILS, otherwise will cycle through all the timesteps - DONE
+	#would be good to gather up the output_ice_init files here, or at least move them to the restart_step folder for plotting later
+
          
 	#DO ASSIMILATION (NEEDS INDIR, INSTRING, INICESTRING, OBSFILE)
 	echo "Starting assimilation"
