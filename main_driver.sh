@@ -11,7 +11,7 @@ set -euo pipefail #should stop script if anything fails
 FIRST_STEP=77 #obs time index referring to first (post-spin) assimilation
 TOTAL_STEPS=27
 last_step=$((FIRST_STEP + TOTAL_STEPS))
-OBSFILE='/work/n01/n01/elicoo/observations/data_v3_2010-2023.nc' #needed in several places
+OBSFILE='dummy' #NOW SET IN nemo-pdaf config file for each obs type #needed in several places
 MEMBERS=9
 
 #Set spinup dir and filestring here
