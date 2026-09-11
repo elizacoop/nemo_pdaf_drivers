@@ -60,7 +60,7 @@ jobid=$(cd "$DST"
   "$FILE"
 
   #sed -i "s|rst_file[[:space:]]*=[[:space:]]*'[^']*'|rst_file = '${PREFIX}${RESTART_ICE_STRING}'|" "$FILE" #restart ICE string
-  sed -i "s|file_ssh_mgrid[[:space:]]*=[[:space:]]*'[^']*'|file_ssh_mgrid = '${OBS_FILE}'|" "$FILE" #observation file
+  ###!!!sed -i "s|file_ssh_mgrid[[:space:]]*=[[:space:]]*'[^']*'|file_ssh_mgrid = '${OBS_FILE}'|" "$FILE" #observation file
 
 
   sbatch --parsable run_pdaf.sh)
