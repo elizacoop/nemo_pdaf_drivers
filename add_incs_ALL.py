@@ -15,7 +15,7 @@ def cap_sum_at_one(arr):
     return out
 
 
-folder_root = "/work/n01/n01/elicoo/CRISP_NEMO_PDAF/CRISP_NEMO_PDAF_1/nemo_5.0.1/cfgs/exp-build-notop/"
+folder_root = "/work/n01/n01/elicoo/CRISP_NEMO_PDAF/CRISP_NEMO_PDAF_1/nemo_5.0.2/cfgs/exp-build-notop/"
 
 ens_tot = int(sys.argv[3])
 restart_folder = sys.argv[1]
@@ -77,10 +77,10 @@ if __name__ == "__main__":
             #print(f"  Domain {dom}")
 
             with Dataset(
-                folder_root + f"ens_{ens_number}/assim_background_increments_{dom:04d}.nc",
+                folder_root + f"ens{ens_number}/assim_background_increments_{dom:04d}.nc",
                 "r",
             ) as increment_file, Dataset(
-                folder_root + f"ens_{ens_number}/assim_background_state_DI_{dom:04d}.nc",
+                folder_root + f"ens{ens_number}/assim_background_state_DI_{dom:04d}.nc",
                 "r",
             ) as background_file:
 
@@ -159,14 +159,14 @@ if __name__ == "__main__":
 
             restart = (
                 folder_root
-                + f"ens_{ens_number}/{restart_folder}/{restart_string}_{dom:04d}.nc"
+                + f"ens{ens_number}/{restart_folder}/{restart_string}_{dom:04d}.nc"
             )
 
             shutil.copy(restart, restart.replace(".nc", "_pre.nc"))
 
             ocean_restart_string = restart_string.replace("ice_", "")
             restart_ocean = ( folder_root
-                + f"ens_{ens_number}/{restart_folder}/{ocean_restart_string}_{dom:04d}.nc"
+                + f"ens{ens_number}/{restart_folder}/{ocean_restart_string}_{dom:04d}.nc"
             )
 
             shutil.copy(restart_ocean, restart_ocean.replace(".nc", "_pre.nc"))

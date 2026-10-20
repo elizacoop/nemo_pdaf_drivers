@@ -1,12 +1,12 @@
 #!/bin/bash
 set -euo pipefail
 
-SRC="./EXP00_template_rundir"
+#SRC="./EXP00_template_rundir"
 FILE="namelist_cfg"
 FILEICE="namelist_ice_cfg"
 START=1   #start is first ens number, end is final number
 END=$9
-BATCH_SIZE=10   # Maximum number of jobs to have in the queue at once
+BATCH_SIZE=8   # Maximum number of jobs to have in the queue at once
 
 #order in main_driver: "$INDIR" "$INSTRING" "$INICESTRNG" "$OUTDIR" "$OUTSTRING" "$OUTICESTRING" "$NXTRNTS" "$START_STRING"
 
@@ -89,7 +89,7 @@ declare -A job_dst        # job_id -> directory the job ran in
 declare -A job_init_out   # job_id -> destination for output.init_* archive
 
 for i in $(seq "$START" "$END"); do
-    DST="../CRISP_NEMO_PDAF/CRISP_NEMO_PDAF_1/nemo_5.0.1/cfgs/exp-build-notop/ens_${i}"
+    DST="../CRISP_NEMO_PDAF/CRISP_NEMO_PDAF_1/nemo_5.0.2/cfgs/exp-build-notop/ens${i}"
 
     wait_for_slot
 

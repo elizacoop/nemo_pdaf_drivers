@@ -6,7 +6,7 @@ FILE="namelist_cfg"
 FILEICE="namelist_ice_cfg"
 START=1   #start is first ens number, end is final number
 END=$9
-BATCH_SIZE=10   # Maximum number of jobs to have in the queue at once
+BATCH_SIZE=4   # Maximum number of jobs to have in the queue at once
 
 #order in main_driver: "$INDIR" "$INSTRING" "$INICESTRNG" "$OUTDIR" "$OUTSTRING" "$OUTICESTRING" "$NXTRNTS" "$START_STRING"
 
@@ -68,7 +68,7 @@ wait_for_all() {
 job_ids=()
 
 for i in $(seq "$START" "$END"); do
-    DST="../CRISP_NEMO_PDAF/CRISP_NEMO_PDAF_1/nemo_5.0.1/cfgs/exp-build-notop/ens_${i}"
+    DST="../CRISP_NEMO_PDAF/CRISP_NEMO_PDAF_1/nemo_5.0.2/cfgs/exp-build-notop/ens${i}"
 
     # Wait until there is a free slot before submitting
     wait_for_slot
@@ -97,7 +97,7 @@ for i in $(seq "$START" "$END"); do
         sed -i "s|cn_ocerst_in[[:space:]]*=[[:space:]]*\"[^\"]*\"|cn_ocerst_in = \"${RESTART_IN_STRING}\"|"      "$FILE"
         sed -i "s|cn_icerst_in[[:space:]]*=[[:space:]]*\"[^\"]*\"|cn_icerst_in = \"${RESTART_IN_ICE_STRING}\"|"  "$FILEICE"
 
-        sbatch --parsable myscript_short.slurm
+        sbatch --parsable myscript_exp03.slurm
     )
 
     job_ids+=("$id")

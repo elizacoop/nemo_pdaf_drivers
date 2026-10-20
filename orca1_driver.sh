@@ -2,27 +2,27 @@
 set -euo pipefail #should stop script if anything fails
 
 
-FIRST_STEP=0 #time index referring to first (post-spin) run
+START_I=${1:-0} #time index referring to first (post-spin) run, default 0 or set in call in sub script
 TOTAL_STEPS=26
-last_step=$((FIRST_STEP + TOTAL_STEPS))
+ 
 OBSFILE='dummy' #NOW SET IN nemo-pdaf config file for each obs type #needed in several places
-MEMBERS=19 #for testing
+MEMBERS=18 #for testing
 
 #Set first pre-assim time step length here (end 2009 - 7th Oct 2010 for us)
 INIT_NXTRNTS=13440
 INIT_STARTSTRING=20100101
 #for time_counter in range(FIRST_SETP:FIRST_STEP+TOTAL_Steps):
-for ((i=FIRST_STEP; i<last_step; i++)); do
+for ((i=START_I; i<TOTAL_STEPS; i++)); do
 ###for ((i=95; i<last_step; i++)); do
 	#define the step counter here 
-	COUNTER=$((i-FIRST_STEP)) #not really needed now we start at 0, but leaving in for now
-	CPONE=$((COUNTER +1))
+	COUNTER=$i #not really needed now we start at 0, but leaving in for now
+	CPONE=$((i +1))
        	echo "i=$i COUNTER=$COUNTER CPONE=$CPONE"
 
 
 	#DEFINE INDIR,INSTRING,INICESTRNG, OUTDIR, OUTSTRING, OUTICESTRING DEPENDING IN TIME_COUNTER AND next run time AND START_string
 	#INDIR="./restart_step${COUNTER}"
-	if [ "$COUNTER" -eq 0 ]; then
+	if [ "$i" -eq 0 ]; then
 	     START_STRING=$INIT_STARTSTRING
              INSTRING="ORCA1_00035040_orca1_enssp_end"
 	     INICESTRING="ORCA1_00035040_orca1_ice_enssp_end"
@@ -33,19 +33,18 @@ for ((i=FIRST_STEP; i<last_step; i++)); do
         else
 		INDIR="./restart_step${COUNTER}"
 
-		INSTRING=$(printf "ORCA1_%08d_ens_step%d" "$LAST_NXTRNTS" "$COUNTER") #FILE=$(printf "restart_%08d.dat" "$NUM") ORCA2_00000360_ens_step1_0094.nc
-		INICESTRING=$(printf "ORCA1_%08d_ens_ice_step%d" "$LAST_NXTRNTS" "$COUNTER")
-	        #CALCUlate next RUN TIME HERE???
-        	source  /work/n01/n01/elicoo/myvenv/bin/activate
-        	NXTRNTS=$(python get_runtime.py "$((i-1))")      ###so we get the time from i-1 to i
+		    source /work/n01/n01/elicoo/myvenv/bin/activate
+		if [ "$i" -eq 1 ]; then
+			LAST_NXTRNTS=$INIT_NXTRNTS                       # the i=0 run
+		else
+		        LAST_NXTRNTS=$(python get_runtime.py "$((i-2))") # run length of cycle i-1
+		fi
+		NXTRNTS=$(python get_runtime.py "$((i-1))")
+		START_STRING=$(python get_next_start_string.py "$((i-1))")
 		deactivate
-        	echo "$i"
-        	echo "$NXTRNTS"
 
-	        source  /work/n01/n01/elicoo/myvenv/bin/activate
-		START_STRING=$(python get_next_start_string.py "$((i-1))" ) #this gives the date of the ith observation
-        	echo "$START_STRING"
-        	deactivate
+		INSTRING=$(printf "ORCA1_%08d_ens_step%d" "$LAST_NXTRNTS" "$COUNTER")
+		INICESTRING=$(printf "ORCA1_%08d_ens_ice_step%d" "$LAST_NXTRNTS" "$COUNTER")
 
 		RUN_SCRIPT=./save_ints_run_ens_general_step_sublimit.sh
 
@@ -72,7 +71,7 @@ for ((i=FIRST_STEP; i<last_step; i++)); do
 	echo "Starting assimilation"
 	
 	ASSIM_TIME=$((i+1))
-	PREFIX=$(printf "ORCA2_%08d_" "$NXTRNTS")
+	PREFIX=$(printf "ORCA1_%08d_" "$NXTRNTS")
 	echo "ASSIM_TIME=$ASSIM_TIME  PREFIX=$PREFIX"
 	echo "Using $OUTDIR, $OUTSTRING, $OUTICESTRING, $OBSFILE"
 	./run_general_assimilation.sh "$OUTDIR" "$PREFIX" "$OUTSTRING" "$OUTICESTRING" "$ASSIM_TIME" "$OBSFILE" "$MEMBERS"

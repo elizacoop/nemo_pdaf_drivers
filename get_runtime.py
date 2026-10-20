@@ -8,7 +8,7 @@ time_step = int(sys.argv[1])####77
 
 dates = pd.to_datetime(obs_file['time'][:].astype(int).astype(str),format='%Y%m%d')
 
-timesteps_for_next_run = 24.*((dates[time_step+1] - dates[time_step]).days)
+timesteps_for_next_run = 2*24.*((dates[time_step+1] - dates[time_step]).days)
 
 print (int(timesteps_for_next_run))
 
