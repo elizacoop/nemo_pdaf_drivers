@@ -7,4 +7,4 @@
 #SBATCH --partition=standard
 #SBATCH --qos=standard
 
-./orca1_driver.sh 1
+./orca1_driver.sh 1 false

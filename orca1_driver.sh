@@ -3,13 +3,22 @@ set -euo pipefail #should stop script if anything fails
 
 
 START_I=${1:-0} #time index referring to first (post-spin) run, default 0 or set in call in sub script
-TOTAL_STEPS=26
+DO_ASSIM=${2:-true}     # default: do the assimilation
+
+case "$DO_ASSIM" in
+    true|false) ;;
+    *) echo "ERROR: DO_ASSIM must be 'true' or 'false', got '$DO_ASSIM'"; exit 1 ;;
+esac
+echo "START_I=$START_I DO_ASSIM=$DO_ASSIM"
+
+
+TOTAL_STEPS=27
  
 OBSFILE='dummy' #NOW SET IN nemo-pdaf config file for each obs type #needed in several places
 MEMBERS=18 #for testing
 
 #Set first pre-assim time step length here (end 2009 - 7th Oct 2010 for us)
-INIT_NXTRNTS=13440
+INIT_NXTRNTS=13392 # to END 6th Oct; applyinmg inc at start of 7th 13440
 INIT_STARTSTRING=20100101
 #for time_counter in range(FIRST_SETP:FIRST_STEP+TOTAL_Steps):
 for ((i=START_I; i<TOTAL_STEPS; i++)); do
@@ -37,10 +46,10 @@ for ((i=START_I; i<TOTAL_STEPS; i++)); do
 		if [ "$i" -eq 1 ]; then
 			LAST_NXTRNTS=$INIT_NXTRNTS                       # the i=0 run
 		else
-		        LAST_NXTRNTS=$(python get_runtime.py "$((i-2))") # run length of cycle i-1
+		        LAST_NXTRNTS=$(python obs_dates.py steps "$((i-2))") # run length of cycle i-1
 		fi
-		NXTRNTS=$(python get_runtime.py "$((i-1))")
-		START_STRING=$(python get_next_start_string.py "$((i-1))")
+		NXTRNTS=$(python obs_dates.py steps "$((i-1))") #$(python get_runtime.py "$((i-1))")
+		START_STRING=$(python obs_dates.py start "$((i-1))")  #$(python get_next_start_string.py "$((i-1))")
 		deactivate
 
 		INSTRING=$(printf "ORCA1_%08d_ens_step%d" "$LAST_NXTRNTS" "$COUNTER")
@@ -57,7 +66,7 @@ for ((i=START_I; i<TOTAL_STEPS; i++)); do
 	echo "INDIR=$INDIR   OUTDIR=$OUTDIR"
 	echo "INSTRING=$INSTRING"
 	echo "OUTSTRING=$OUTSTRING"
-
+        echo "NXTRNTS=$NXTRNTS START_STRING=$START_STRING"
 
 
 	#RUN NEMO ENSEMBLE (NEEDS instring, inicestring, indir, outstring, outicestring, outdir, startstring), NXTRNTS
@@ -66,14 +75,14 @@ for ((i=START_I; i<TOTAL_STEPS; i++)); do
 	#^^ SHOULD SOMEWHERE PUT IN A STOP IF THE ABOVE FAILS, otherwise will cycle through all the timesteps - DONE
 	#would be good to gather up the output_ice_init files here, or at least move them to the restart_step folder for plotting later
 
-         
+      if [ "$DO_ASSIM" = "true" ]; then   
 	#DO ASSIMILATION (NEEDS INDIR, INSTRING, INICESTRING, OBSFILE)
 	echo "Starting assimilation"
 	
 	ASSIM_TIME=$((i+1))
 	PREFIX=$(printf "ORCA1_%08d_" "$NXTRNTS")
 	echo "ASSIM_TIME=$ASSIM_TIME  PREFIX=$PREFIX"
-	echo "Using $OUTDIR, $OUTSTRING, $OUTICESTRING, $OBSFILE"
+	echo "Using $OUTDIR, $OUTSTRING, $OUTICESTRING"
 	./run_general_assimilation.sh "$OUTDIR" "$PREFIX" "$OUTSTRING" "$OUTICESTRING" "$ASSIM_TIME" "$OBSFILE" "$MEMBERS"
 
 	#ADD INCREMENTS needs folder, string and num_ens
@@ -85,7 +94,9 @@ for ((i=START_I; i<TOTAL_STEPS; i++)); do
 	deactivate
         
 	echo "Increments added"
-
+      else
+	echo "Open loop: no assim or incs added"
+      fi
 	#KEEP THIS value of NXTRNTS and START_STRING for the following instring
 	LAST_NXTRNTS="$NXTRNTS"
 	LAST_START_STRING="$START_STRING" #??are the types OK here?? **don't need this one actually
