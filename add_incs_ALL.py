@@ -157,21 +157,30 @@ if __name__ == "__main__":
             # Backup restarts
             # -------------------------------------------------------------
 
-            restart = (
-                folder_root
-                + f"ens{ens_number}/{restart_folder}/{restart_string}_{dom:04d}.nc"
-            )
+            #restart = (
+            #    folder_root
+            #    + f"ens{ens_number}/{restart_folder}/{restart_string}_{dom:04d}.nc"
+            #)
 
-            shutil.copy(restart, restart.replace(".nc", "_pre.nc"))
+            #shutil.copy(restart, restart.replace(".nc", "_pre.nc"))
+
+            #ocean_restart_string = restart_string.replace("ice_", "")
+            #restart_ocean = ( folder_root
+            #    + f"ens{ens_number}/{restart_folder}/{ocean_restart_string}_{dom:04d}.nc"
+            #)
+
+            #shutil.copy(restart_ocean, restart_ocean.replace(".nc", "_pre.nc"))
+
+            folder = folder_root + f"ens{ens_number}/{restart_folder}/"
+
+            restart     = folder + f"{restart_string}_{dom:04d}.nc"
+            restart_pre = folder + f"{restart_string}_pre_{dom:04d}.nc"
+            shutil.copy(restart, restart_pre)
 
             ocean_restart_string = restart_string.replace("ice_", "")
-            restart_ocean = ( folder_root
-                + f"ens{ens_number}/{restart_folder}/{ocean_restart_string}_{dom:04d}.nc"
-            )
-
-            shutil.copy(restart_ocean, restart_ocean.replace(".nc", "_pre.nc"))
-
-
+            restart_ocean     = folder + f"{ocean_restart_string}_{dom:04d}.nc"
+            restart_ocean_pre = folder + f"{ocean_restart_string}_pre_{dom:04d}.nc"
+            shutil.copy(restart_ocean, restart_ocean_pre)
 
             # -------------------------------------------------------------
             # Write analyses back

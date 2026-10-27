@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --job-name=da_submit
-#SBATCH --time=12:00:00
+#SBATCH --time=23:59:59
 #SBATCH --output=da_submit_%j.out
 #SBATCH --error=eda_submit_%j.err
 #SBATCH --account=n01-CRISP
 #SBATCH --partition=standard
 #SBATCH --qos=standard
 
-./orca1_driver.sh 1 false
+./orca1_driver.sh 1 true

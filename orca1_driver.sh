@@ -12,7 +12,7 @@ esac
 echo "START_I=$START_I DO_ASSIM=$DO_ASSIM"
 
 
-TOTAL_STEPS=27
+TOTAL_STEPS=3
  
 OBSFILE='dummy' #NOW SET IN nemo-pdaf config file for each obs type #needed in several places
 MEMBERS=18 #for testing
@@ -96,6 +96,8 @@ for ((i=START_I; i<TOTAL_STEPS; i++)); do
 	echo "Increments added"
       else
 	echo "Open loop: no assim or incs added"
+	echo "removing restart files"
+
       fi
 	#KEEP THIS value of NXTRNTS and START_STRING for the following instring
 	LAST_NXTRNTS="$NXTRNTS"
