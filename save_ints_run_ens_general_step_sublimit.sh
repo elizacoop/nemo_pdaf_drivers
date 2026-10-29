@@ -53,7 +53,7 @@ rebuild_all_in_dir() {
    l_maskout=.true.
 /
 EOF
-          "$REBUILD_NEMO"
+          "$REBUILD_NEMO" > /dev/null 
         ) || { echo "ERROR: rebuild_nemo failed for $bname"; return 1; }
         rm -f "$dir/nam_rebuild"
         if [[ ! -s "${base}.nc" ]]; then
@@ -156,7 +156,7 @@ for i in $(seq "$START" "$END"); do
     sleep 2
 done
 
-echo "All $((END - START + 1)) jobs submitted: ${job_ids[*]}"
+echo "All $((END-START + 1)) jobs submitted: ${job_ids[*]}"
 echo "Waiting for all jobs to complete..."
 
 wait_for_all

@@ -19,6 +19,7 @@ RESTART_IN_DIR=$1
 RESTART_IN_STRING=$2
 RESTART_IN_ICE_STRING=$3
 
+
 # ── Helper: wait until fewer than BATCH_SIZE jobs are running/pending ─────────
 wait_for_slot() {
     while true; do
@@ -107,7 +108,7 @@ for i in $(seq "$START" "$END"); do
     sleep 2
 done
 
-echo "All $((END - START + 1)) jobs submitted: ${job_ids[*]}"
+echo "All $((END-START+1)) jobs submitted: ${job_ids[*]}"
 echo "Waiting for all jobs to complete..."
 
 wait_for_all
