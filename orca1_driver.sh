@@ -15,7 +15,7 @@ echo "START_I=$START_I DO_ASSIM=$DO_ASSIM"
 TOTAL_STEPS=150
  
 OBSFILE='dummy' #NOW SET IN nemo-pdaf config file for each obs type #needed in several places
-MEMBERS=17 #for testing
+MEMBERS=16 #for testing
 
 #Set first pre-assim time step length here (end 2009 - 7th Oct 2010 for us)
 INIT_NXTRNTS=13392 # to END 6th Oct; applyinmg inc at start of 7th 13440
