@@ -12,7 +12,7 @@ esac
 echo "START_I=$START_I DO_ASSIM=$DO_ASSIM"
 
 
-TOTAL_STEPS=350
+TOTAL_STEPS=3
  
 OBSFILE='dummy' #NOW SET IN nemo-pdaf config file for each obs type #needed in several places
 MEMBERS=17 #for testing
@@ -42,7 +42,7 @@ for ((i=START_I; i<TOTAL_STEPS; i++)); do
         else
 		INDIR="./restart_step${COUNTER}"
 
-		    source /work/n01/n01/elicoo/myvenv/bin/activate
+		    source /epccfs/n01/n01/elicoo/myvenv/bin/activate
 		if [ "$i" -eq 1 ]; then
 			LAST_NXTRNTS=$INIT_NXTRNTS                       # the i=0 run
 		else
@@ -89,7 +89,7 @@ for ((i=START_I; i<TOTAL_STEPS; i++)); do
         OUTLONGSTRING=${PREFIX}${OUTICESTRING}
 	echo "Adding increments using $OUTDIR $OUTLONGSTRING $MEMBERS" #Addin increments using ./restart_step1 ORCA2_00000360_ 4
 
-	source  /work/n01/n01/elicoo/myvenv/bin/activate
+	source  /epccfs/n01/n01/elicoo/myvenv/bin/activate
 	python add_incs_ALL.py "$OUTDIR" "$OUTLONGSTRING" "$MEMBERS"
 	deactivate
         
